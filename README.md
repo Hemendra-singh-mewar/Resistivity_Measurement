@@ -99,8 +99,15 @@ git init
 git add .
 git commit -m "Add proposed silicon resistivity measurement grid"
 git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/silicon-resistivity-mapping.git
+git remote add origin https://github.com/Hemendra-singh-mewar/Resistivity_Measurement.git
 git push -u origin main
 ```
 
-Replace `YOUR_USERNAME` with your GitHub account name. Alternatively, upload the project files using GitHub's web interface. No repository has been published as part of preparing this project.
+
+## Measurement layout
+
+![Proposed resistivity measurement positions](outputs/measurement_layout.png)
+
+[Download the vector PDF](outputs/measurement_layout.pdf)
+
+[Download the measurement coordinates](outputs/measurement_coordinates.csv)
