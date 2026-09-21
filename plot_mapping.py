@@ -14,14 +14,19 @@ from matplotlib.patches import Circle, Rectangle
 import numpy as np
 
 SAMPLES = {
-    'S01': {'diameter': 42.7, 'height': 30.0, 'extra_radii': [], 'extra_heights': []},
+    'S01': {'diameter': 42.7, 'height': 30.0, 'extra_radii': []},
     'S02': {'diameter': 100.0, 'height': 100.0,
-            'extra_radii': [35.0], 'extra_heights': [50.0, 75.0, 90.0]},
+            'extra_radii': [35.0]},
 }
 COMMON_RADII = [8.5, 15.0]
 COMMON_HEIGHTS = [7.5, 15.0, 22.5]
 FACE_ANGLES = np.arange(0, 360, 45)
 LATERAL_ANGLES = [0, 90, 180, 270]
+
+
+def lateral_heights(sample):
+    """Same inward offsets from both ends; count coincident rows once."""
+    return sorted(set(COMMON_HEIGHTS + [sample['height']-d for d in COMMON_HEIGHTS]))
 
 
 def make_coordinates():
@@ -40,6 +45,8 @@ def make_coordinates():
             'theta_deg': '' if angle is None else angle,
             'x_mm': round(radius*np.sin(theta), 6),
             'y_mm': round(radius*np.cos(theta), 6), 'z_mm': z,
+            'distance_from_A_mm': z,
+            'distance_from_B_mm': round(SAMPLES[sample]['height']-z, 6),
         })
     for name, sample in SAMPLES.items():
         for face, z in [('A', 0.0), ('B', sample['height'])]:
@@ -50,10 +57,10 @@ def make_coordinates():
                 for number, angle in enumerate(FACE_ANGLES, 1):
                     add(name, face, f'{prefix}{number}', radius, int(angle), z,
                         radius in COMMON_RADII)
-        for level, z in enumerate(COMMON_HEIGHTS + sample['extra_heights'], 1):
+        for level, z in enumerate(lateral_heights(sample), 1):
             for suffix, angle in zip('abcd', LATERAL_ANGLES):
                 add(name, 'lateral', f'L{level}{suffix}', sample['diameter']/2,
-                    angle, z, z in COMMON_HEIGHTS)
+                    angle, z, True)
     return rows
 
 
@@ -67,16 +74,23 @@ def validate(rows):
         assert r['r_mm'] <= sample['diameter']/2
         if r['surface'] != 'lateral':
             assert r['r_mm'] < sample['diameter']/2
-    for surface in ['A', 'B', 'lateral']:
+    for surface in ['A', 'B']:
         matched = []
         for name in SAMPLES:
             points = [r for r in rows if r['sample_id'] == name
                       and r['surface'] == surface and r['matched_location']]
             # Face B has a different z because sample thickness differs.
-            # Lateral points share theta and z, but lie at different radii.
-            keys = ('point_id','theta_deg','z_mm') if surface == 'lateral' else ('point_id','r_mm','theta_deg')
+            keys = ('point_id','r_mm','theta_deg')
             matched.append({tuple(r[k] for k in keys) for r in points})
         assert matched[0] == matched[1], f'Unmatched coordinates: {surface}'
+    for face in ['A', 'B']:
+        key = f'distance_from_{face}_mm'
+        expected = {(d, a) for d in COMMON_HEIGHTS for a in LATERAL_ANGLES}
+        for name in SAMPLES:
+            actual = {(r[key],r['theta_deg']) for r in rows
+                      if r['sample_id']==name and r['surface']=='lateral'
+                      and r[key] in COMMON_HEIGHTS}
+            assert actual == expected, f'Incomplete offsets from face {face}: {name}'
 
 
 def make_figure(rows, output):
@@ -116,16 +130,20 @@ def make_figure(rows, output):
                 ax.scatter([r['theta_deg'] for r in points], [r['z_mm'] for r in points],
                            s=20,marker='o' if matched else 's',
                            facecolors='black' if matched else 'none',edgecolors='black',linewidths=.8,zorder=3)
-        for level, z in enumerate(COMMON_HEIGHTS+sample['extra_heights'],1):
+        for level, z in enumerate(lateral_heights(sample),1):
             ax.axhline(z,color='.8',lw=.5,ls=':',zorder=0)
             ax.text(281,z,f'L{level}',fontsize=7,va='center')
         ax.set(xlim=(-25,315),ylim=(-3,105),xlabel='Angular position, θ (degrees)',ylabel='Height from face A, z (mm)')
-        ax.set_xticks(LATERAL_ANGLES);ax.set_yticks([0,7.5,15,22.5,30,50,75,90,100])
+        ax.set_xticks(LATERAL_ANGLES)
+        ax.set_yticks(sorted(set([0,30,50,100] + lateral_heights(sample))))
+        ax.text(125,sample['height']-1,'Face B',ha='center',va='top',fontsize=8)
+        ax.text(125,1,'Face A',ha='center',va='bottom',fontsize=8)
         ax.tick_params(axis='y',labelsize=8)
         ax.set_title(f'({"cd"[column]}) {name}: lateral surface',fontsize=10)
     handles = [plt.Line2D([],[],marker='o',color='black',ls='none',ms=4,label='Matched positions'),
                plt.Line2D([],[],marker='s',color='black',markerfacecolor='none',ls='none',ms=4,label='Additional positions')]
-    fig.legend(handles=handles,loc='lower center',bbox_to_anchor=(.5,.02),ncol=2,frameon=False)
+    fig.legend(handles=handles,loc='lower center',bbox_to_anchor=(.5,.035),ncol=2,frameon=False)
+    fig.text(.5,.012,'Sidewall offsets: 7.5, 15 and 22.5 mm inward from each end; distance from B = thickness − z.',ha='center',fontsize=8)
     fig.subplots_adjust(left=.09,right=.97,bottom=.11,top=.94,hspace=.35,wspace=.30)
     fig.savefig(output/'measurement_layout.pdf')
     fig.savefig(output/'measurement_layout.png',dpi=300)
