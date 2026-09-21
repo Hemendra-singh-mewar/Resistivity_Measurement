@@ -1,8 +1,4 @@
-"""Generate proposed silicon resistivity coordinates and a four-panel figure.
 
-Usage: python plot_mapping.py --output outputs
-All positions are probe-array centres, not individual probe contacts.
-"""
 from pathlib import Path
 import argparse
 import csv
