@@ -1,8 +1,8 @@
 # Silicon resistivity mapping
 
-I put together this script to plan the resistivity measurements on our two silicon samples for ET-CRISTAL. We want to compare the same radii and angles on the end faces, and the same distances inward from both ends on the lateral surfaces.
+I put together this script to plan the resistivity measurements on our all silicon samples (two different sizes) for ET-CRISTAL. We want to compare the same radii and angles on the end faces, and the same distances inward from both ends on the lateral surfaces.
 
-These are proposed positions. We still need to agree on the spacing and contact arrangement with the measurement laboratory.
+These are proposed positions. We still need to agree on the spacing and contact arrangement with Duy and Alejandro.
 
 ## Measurement layout
 
