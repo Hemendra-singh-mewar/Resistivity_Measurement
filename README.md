@@ -95,12 +95,7 @@ The `matched_location` flag identifies planned comparisons. For lateral location
 
 The plotted positions are probe-array centres. We need to agree on probe spacing and orientation, clearance from edges and bevels, surface preparation and geometry corrections. Lateral measurements depend on reliable contact on curved surfaces. Matching coordinates does not remove geometry effects or establish equivalent original positions in the ingot.
 
-These measurements do not provide a complete map of the interior. Record temperature, lighting, current, voltage, settling time, contact arrangement, preparation, uncertainty and repeat readings with the results.
+These measurements do not provide a complete map of the interior, We would also need to record temperature, lighting, current, voltage, settling time, contact arrangement, preparation, uncertainty and repeat readings with the results.
 
 Once the ambient temperature procedure is established, we can use it as a baseline for planning cryogenic measurements in our laboratory.
 
-## Changing the plan
-
-Edit `SAMPLES`, `COMMON_RADII`, `COMMON_HEIGHTS`, `FACE_ANGLES` and `LATERAL_ANGLES` near the top of `plot_mapping.py`. `COMMON_HEIGHTS` now gives inward offsets from each end. The function `lateral_heights` combines these and removes coincident rows.
-
-The script checks unique identifiers, sample bounds and matching offsets from both ends. It generates geometry only; it does not calculate resistivity, correction factors or current penetration depth.
