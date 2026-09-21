@@ -101,5 +101,5 @@ The plotted positions are probe-array centres. We need to agree on probe spacing
 
 These measurements do not provide a complete map of the interior, We would also need to record temperature, lighting, current, voltage, settling time, contact arrangement, preparation, uncertainty and repeat readings with the results.
 
-Once the ambient temperature procedure is established, we can use it as a baseline for planning cryogenic measurements in our laboratory.
+Once the ambient temperature procedure is performed, we can use it as a baseline for planning cryogenic measurements in our laboratory.
 
