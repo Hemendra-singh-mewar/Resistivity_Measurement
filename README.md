@@ -10,6 +10,10 @@ These are proposed positions. We still need to agree on the spacing and contact 
 
 [Download the PDF](outputs/measurement_layout.pdf) · [Download the coordinates](outputs/measurement_coordinates.csv)
 
+
+
+## Note: For the larger sample, I have just used the same lateral surface measurement points as for the smaller sample. We will need to discuss what is practically feasible and decide on the most suitable approach for both samples.
+
 ## Samples
 
 | Sample | Diameter | Thickness | Both end faces | Lateral surface | Total |
